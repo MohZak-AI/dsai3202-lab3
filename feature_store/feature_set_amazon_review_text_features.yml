@@ -1,0 +1,11 @@
+$schema: https://azuremlschemas.azureedge.net/latest/featureset.schema.json
+
+name: amazon_review_text_features
+version: "1"
+description: Engineered features from Amazon Electronics reviews including length, sentiment, TF-IDF, and SBERT embeddings
+
+entities:
+  - azureml:AmazonReview:1
+
+specification:
+  path: ./spec/

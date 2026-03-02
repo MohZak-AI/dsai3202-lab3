@@ -1,0 +1,13 @@
+# Datastore configs with account keys
+datastores/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Azure
+.azure/

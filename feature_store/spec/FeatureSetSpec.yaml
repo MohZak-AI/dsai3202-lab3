@@ -1,0 +1,27 @@
+$schema: https://azuremlschemas.azureedge.net/latest/featuresetSpec.schema.json
+
+source:
+  type: parquet
+  path: azureml://subscriptions/0b475409-9d7c-4dff-a07b-084eff651874/resourceGroups/rg-60301919/providers/Microsoft.MachineLearningServices/workspaces/Amazon-Electronics-Lab-60301919/datastores/workspaceblobstore/paths/azureml/affable_fox_s5j664ypmg/merge/output/
+  timestamp_column:
+    name: unixReviewTime
+
+index_columns:
+  - name: asin
+    type: string
+  - name: reviewerID
+    type: string
+
+features:
+  - name: review_length_words
+    type: integer
+  - name: review_length_chars
+    type: integer
+  - name: sentiment_pos
+    type: float
+  - name: sentiment_neg
+    type: float
+  - name: sentiment_neu
+    type: float
+  - name: sentiment_compound
+    type: float
