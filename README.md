@@ -1,26 +1,8 @@
-# DSAI3202 Lab 3 & Lab 4
+# DSAI3202 Lab 4 - Feature Engineering Pipeline
 
-This repo covers Labs 3 and 4 for Assignment 1. Lab 3 was about cleaning and preparing the data in Databricks. Lab 4 picks up from there and builds a full feature engineering pipeline on Azure ML.
+This lab builds a feature engineering pipeline on Azure ML. It takes the sampled gold dataset from Lab 3 and runs it through several feature extraction steps, then registers everything in the Azure ML Feature Store.
 
-## Lab 3 - Data Preprocessing in Azure
-
-In this lab I loaded the raw Amazon Electronics reviews into Spark, cleaned them up, joined them with product metadata, and saved everything as a Gold dataset in Delta format. This gave me a solid base to work with in Lab 4.
-
-### Notebooks
-
-**01_load_and_clean_reviews.ipynb** - Reads the raw data, drops nulls and duplicates, fixes data types, trims strings. Basically just getting the data into a usable state.
-
-**02_enrich_with_metadata.ipynb** - Takes the cleaned reviews and joins them with product metadata on `asin`. This adds things like product category and brand info that are useful for modeling later.
-
-**03_write_gold_features_v1.ipynb** - Applies some final transformations and writes the output as Delta. This is the "gold" dataset that gets sampled and registered as a data asset for Lab 4.
-
----
-
-## Lab 4 - Feature Engineering Pipeline
-
-This is where the bulk of the work happened. I built an Azure ML pipeline that takes the sampled gold dataset and runs it through several feature extraction steps, then merges everything into one big feature table.
-
-### Setup
+## Setup
 
 Before building the pipeline I had to set up a few things:
 - Registered a blob datastore (`blobkey`) pointing to the `curated` container on `amazondatalake60301919`
