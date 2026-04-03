@@ -2,7 +2,6 @@ trigger:
   branches:
     include:
       - assignment_2
-      - cloud
 
 pool:
   vmImage: ubuntu-latest
