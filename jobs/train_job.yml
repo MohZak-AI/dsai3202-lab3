@@ -1,0 +1,29 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+type: command
+command: >-
+  python train.py 
+  --train_data ${{inputs.train}} 
+  --val_data ${{inputs.val}} 
+  --test_data ${{inputs.test}} 
+  --output ${{outputs.model_output}}
+code: ../src
+inputs:
+  train:
+    type: uri_folder
+    path: azureml://subscriptions/0b475409-9d7c-4dff-a07b-084eff651874/resourcegroups/rg-60301919/workspaces/Amazon-Electronics-Lab-60301919/datastores/workspaceblobstore/paths/azureml/e509ae62-7921-40e0-810e-3a46aba29ee3/output/
+    mode: download
+  val:
+    type: uri_folder
+    path: azureml://subscriptions/0b475409-9d7c-4dff-a07b-084eff651874/resourcegroups/rg-60301919/workspaces/Amazon-Electronics-Lab-60301919/datastores/workspaceblobstore/paths/azureml/0bd5ad74-9676-4cee-baaa-2a8aa74f40bd/output/
+    mode: download
+  test:
+    type: uri_folder
+    path: azureml://subscriptions/0b475409-9d7c-4dff-a07b-084eff651874/resourcegroups/rg-60301919/workspaces/Amazon-Electronics-Lab-60301919/datastores/workspaceblobstore/paths/azureml/74d426d1-2089-4a39-9473-01c01d516024/output/
+    mode: download
+outputs:
+  model_output:
+    type: uri_folder
+environment: azureml:train-env@latest
+compute: azureml:lab4-60301919
+display_name: amazon-review-training-job
+experiment_name: dsai3202-lab3

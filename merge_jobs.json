@@ -1,0 +1,112 @@
+            "path": "${{parent.jobs.normalize.outputs.out}}"
+          }
+        },
+        "outputs": {
+          "output": {
+            "type": "uri_folder"
+          }
+        },
+        "type": "command"
+      },
+      "merge": {
+        "component": "azureml:merge_features:2026-03-02-16-56-02-1985001",
+        "inputs": {
+          "length": {
+            "path": "${{parent.jobs.length.outputs.output}}"
+          },
+          "sbert": {
+            "path": "${{parent.jobs.sbert.outputs.output}}"
+          },
+          "sentiment": {
+            "path": "${{parent.jobs.sentiment.outputs.output}}"
+          },
+          "tfidf": {
+            "path": "${{parent.jobs.tfidf.outputs.train_out}}"
+          }
+        },
+        "outputs": {
+          "output": {
+            "type": "uri_folder"
+          }
+        },
+        "type": "command"
+      },
+      "normalize": {
+        "component": "azureml:normalize_text:2026-03-02-16-55-42-1695358",
+        "inputs": {
+          "data": {
+            "path": "${{parent.jobs.split.outputs.train}}"
+          }
+        },
+        "outputs": {
+          "out": {
+            "type": "uri_folder"
+          }
+        },
+        "type": "command"
+      },
+      "normalize_test": {
+        "component": "azureml:normalize_text:2026-03-02-16-55-42-1695358",
+        "inputs": {
+          "data": {
+            "path": "${{parent.jobs.split.outputs.test}}"
+          }
+        },
+        "outputs": {
+          "out": {
+            "type": "uri_folder"
+          }
+        },
+        "type": "command"
+      },
+      "normalize_val": {
+        "component": "azureml:normalize_text:2026-03-02-16-55-42-1695358",
+        "inputs": {
+          "data": {
+            "path": "${{parent.jobs.split.outputs.val}}"
+          }
+        },
+        "outputs": {
+          "out": {
+            "type": "uri_folder"
+          }
+        },
+        "type": "command"
+      },
+      "sbert": {
+        "component": "azureml:sbert_embeddings:2026-03-02-16-55-58-7496489",
+        "inputs": {
+          "data": {
+            "path": "${{parent.jobs.normalize.outputs.out}}"
+          }
+        },
+        "outputs": {
+          "output": {
+            "type": "uri_folder"
+          }
+        },
+        "type": "command"
+      },
+      "sentiment": {
+        "component": "azureml:sentiment_features:2026-03-02-16-55-50-5300469",
+        "inputs": {
+          "data": {
+            "path": "${{parent.jobs.normalize.outputs.out}}"
+          }
+        },
+        "outputs": {
+          "output": {
+            "type": "uri_folder"
+          }
+        },
+        "type": "command"
+      },
+      "split": {
+        "component": "azureml:split_dataset:2",
+        "inputs": {
+          "data": {
+            "path": "${{parent.inputs.sampled_data}}"
+          },
+          "seed": "42",
+          "train_ratio": "0.7",
+          "val_ratio": "0.15"

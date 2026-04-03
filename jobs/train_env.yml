@@ -1,0 +1,19 @@
+$schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
+name: train-env
+image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04
+conda_file:
+  name: train-env
+  channels:
+    - defaults
+    - conda-forge
+  dependencies:
+    - python=3.8
+    - pip
+    - pip:
+        - pandas
+        - pyarrow
+        - numpy
+        - scikit-learn
+        - joblib
+        - mlflow
+        - azureml-mlflow

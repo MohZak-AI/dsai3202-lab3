@@ -1,0 +1,210 @@
+{
+  "compute": "azureml:lab4-60301919",
+  "creation_context": {
+    "created_at": "2026-03-02T17:13:25.058702+00:00",
+    "created_by": "Mohammed Moulai",
+    "created_by_type": "User"
+  },
+  "display_name": "affable_fox_s5j664ypmg",
+  "experiment_name": "dsai3202-lab3",
+  "id": "azureml:/subscriptions/0b475409-9d7c-4dff-a07b-084eff651874/resourceGroups/rg-60301919/providers/Microsoft.MachineLearningServices/workspaces/Amazon-Electronics-Lab-60301919/jobs/affable_fox_s5j664ypmg",
+  "inputs": {
+    "sampled_data": {
+      "mode": "ro_mount",
+      "path": "azureml:Amazon-Electronics-Lab-60301919:1",
+      "type": "uri_folder"
+    }
+  },
+  "jobs": {
+    "length": {
+      "component": "azureml:length_features:2026-03-02-16-55-45-5286207",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.normalize.outputs.out}}"
+        }
+      },
+      "outputs": {
+        "output": {
+          "type": "uri_folder"
+        }
+      },
+      "type": "command"
+    },
+    "merge": {
+      "component": "azureml:merge_features:2026-03-02-16-56-02-1985001",
+      "inputs": {
+        "length": {
+          "path": "${{parent.jobs.length.outputs.output}}"
+        },
+        "sbert": {
+          "path": "${{parent.jobs.sbert.outputs.output}}"
+        },
+        "sentiment": {
+          "path": "${{parent.jobs.sentiment.outputs.output}}"
+        },
+        "tfidf": {
+          "path": "${{parent.jobs.tfidf.outputs.train_out}}"
+        }
+      },
+      "outputs": {
+        "output": {
+          "type": "uri_folder"
+        }
+      },
+      "type": "command"
+    },
+    "normalize": {
+      "component": "azureml:normalize_text:2026-03-02-16-55-42-1695358",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.split.outputs.train}}"
+        }
+      },
+      "outputs": {
+        "out": {
+          "type": "uri_folder"
+        }
+      },
+      "type": "command"
+    },
+    "normalize_test": {
+      "component": "azureml:normalize_text:2026-03-02-16-55-42-1695358",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.split.outputs.test}}"
+        }
+      },
+      "outputs": {
+        "out": {
+          "type": "uri_folder"
+        }
+      },
+      "type": "command"
+    },
+    "normalize_val": {
+      "component": "azureml:normalize_text:2026-03-02-16-55-42-1695358",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.split.outputs.val}}"
+        }
+      },
+      "outputs": {
+        "out": {
+          "type": "uri_folder"
+        }
+      },
+      "type": "command"
+    },
+    "sbert": {
+      "component": "azureml:sbert_embeddings:2026-03-02-16-55-58-7496489",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.normalize.outputs.out}}"
+        }
+      },
+      "outputs": {
+        "output": {
+          "type": "uri_folder"
+        }
+      },
+      "type": "command"
+    },
+    "sentiment": {
+      "component": "azureml:sentiment_features:2026-03-02-16-55-50-5300469",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.normalize.outputs.out}}"
+        }
+      },
+      "outputs": {
+        "output": {
+          "type": "uri_folder"
+        }
+      },
+      "type": "command"
+    },
+    "split": {
+      "component": "azureml:split_dataset:2",
+      "inputs": {
+        "data": {
+          "path": "${{parent.inputs.sampled_data}}"
+        },
+        "seed": "42",
+        "train_ratio": "0.7",
+        "val_ratio": "0.15"
+      },
+      "outputs": {
+        "test": {
+          "type": "uri_folder"
+        },
+        "train": {
+          "type": "uri_folder"
+        },
+        "val": {
+          "type": "uri_folder"
+        }
+      },
+      "type": "command"
+    },
+    "tfidf": {
+      "component": "azureml:tfidf_features:2026-03-02-16-55-53-7811664",
+      "inputs": {
+        "max_features": "500",
+        "test": {
+          "path": "${{parent.jobs.normalize_test.outputs.out}}"
+        },
+        "train": {
+          "path": "${{parent.jobs.normalize.outputs.out}}"
+        },
+        "val": {
+          "path": "${{parent.jobs.normalize_val.outputs.out}}"
+        }
+      },
+      "outputs": {
+        "test_out": {
+          "type": "uri_folder"
+        },
+        "train_out": {
+          "type": "uri_folder"
+        },
+        "val_out": {
+          "type": "uri_folder"
+        }
+      },
+      "type": "command"
+    }
+  },
+  "name": "affable_fox_s5j664ypmg",
+  "properties": {
+    "azureml.DatasetAccessMode": "Asset",
+    "azureml.DevPlatv2": "true",
+    "azureml.continue_on_failed_optional_input": "True",
+    "azureml.continue_on_step_failure": "True",
+    "azureml.defaultComputeName": "lab4-60301919",
+    "azureml.defaultDataStoreName": "workspaceblobstore",
+    "azureml.enforceRerun": "False",
+    "azureml.git.dirty": "True",
+    "azureml.parameters": "{}",
+    "azureml.pipelineComponent": "pipelinerun",
+    "azureml.pipelines.stages": "{\"Initialization\":null,\"Execution\":{\"StartTime\":\"2026-03-02T17:13:28.3727087+00:00\",\"EndTime\":\"2026-03-02T17:55:16.8818065+00:00\",\"Status\":\"Finished\"}}",
+    "azureml.runsource": "azureml.PipelineRun",
+    "mlflow.source.git.branch": "lab4_feature_engineering",
+    "mlflow.source.git.commit": "57b5caf688bd143900a94d17b82a4373efc85323",
+    "mlflow.source.git.repoURL": "https://github.com/MohZak-AI/dsai3202-lab3.git",
+    "runSource": "MFE",
+    "runType": "HTTP"
+  },
+  "resourceGroup": "rg-60301919",
+  "services": {
+    "Studio": {
+      "endpoint": "https://ml.azure.com/runs/affable_fox_s5j664ypmg?wsid=/subscriptions/0b475409-9d7c-4dff-a07b-084eff651874/resourcegroups/rg-60301919/workspaces/Amazon-Electronics-Lab-60301919&tid=b30f4b44-46c6-4070-9997-f87b38d4771c",
+      "type": "Studio"
+    },
+    "Tracking": {
+      "endpoint": "azureml://qatarcentral.api.azureml.ms/mlflow/v1.0/subscriptions/0b475409-9d7c-4dff-a07b-084eff651874/resourceGroups/rg-60301919/providers/Microsoft.MachineLearningServices/workspaces/Amazon-Electronics-Lab-60301919?",
+      "type": "Tracking"
+    }
+  },
+  "status": "Completed",
+  "type": "pipeline"
+}

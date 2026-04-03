@@ -1,0 +1,244 @@
+{
+  "compute": "azureml:lab4-60301919",
+  "creation_context": {
+    "created_at": "2026-04-03T08:47:21.382227+00:00",
+    "created_by": "Mohammed Moulai",
+    "created_by_type": "User"
+  },
+  "display_name": "tender_sail_9my3fkg5sl",
+  "experiment_name": "dsai3202-lab3",
+  "id": "azureml:/subscriptions/0b475409-9d7c-4dff-a07b-084eff651874/resourceGroups/rg-60301919/providers/Microsoft.MachineLearningServices/workspaces/Amazon-Electronics-Lab-60301919/jobs/tender_sail_9my3fkg5sl",
+  "inputs": {
+    "sampled_data": {
+      "mode": "ro_mount",
+      "path": "azureml:Amazon-Electronics-Lab-60301919:1",
+      "type": "uri_folder"
+    }
+  },
+  "jobs": {
+    "length_test": {
+      "component": "azureml:length_features:2026-03-02-16-55-45-5286207",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.normalize_test.outputs.out}}"
+        }
+      },
+      "type": "command"
+    },
+    "length_train": {
+      "component": "azureml:length_features:2026-03-02-16-55-45-5286207",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.normalize_train.outputs.out}}"
+        }
+      },
+      "type": "command"
+    },
+    "length_val": {
+      "component": "azureml:length_features:2026-03-02-16-55-45-5286207",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.normalize_val.outputs.out}}"
+        }
+      },
+      "type": "command"
+    },
+    "merge_deploy": {
+      "component": "azureml:merge_features:2026-03-02-16-56-02-1985001",
+      "inputs": {
+        "length": {
+          "path": "${{parent.jobs.length_test.outputs.output}}"
+        },
+        "sbert": {
+          "path": "${{parent.jobs.sbert_test.outputs.output}}"
+        },
+        "sentiment": {
+          "path": "${{parent.jobs.sentiment_test.outputs.output}}"
+        },
+        "tfidf": {
+          "path": "${{parent.jobs.tfidf.outputs.test_out}}"
+        }
+      },
+      "type": "command"
+    },
+    "merge_test": {
+      "component": "azureml:merge_features:2026-03-02-16-56-02-1985001",
+      "inputs": {
+        "length": {
+          "path": "${{parent.jobs.length_test.outputs.output}}"
+        },
+        "sbert": {
+          "path": "${{parent.jobs.sbert_test.outputs.output}}"
+        },
+        "sentiment": {
+          "path": "${{parent.jobs.sentiment_test.outputs.output}}"
+        },
+        "tfidf": {
+          "path": "${{parent.jobs.tfidf.outputs.test_out}}"
+        }
+      },
+      "type": "command"
+    },
+    "merge_train": {
+      "component": "azureml:merge_features:2026-03-02-16-56-02-1985001",
+      "inputs": {
+        "length": {
+          "path": "${{parent.jobs.length_train.outputs.output}}"
+        },
+        "sbert": {
+          "path": "${{parent.jobs.sbert_train.outputs.output}}"
+        },
+        "sentiment": {
+          "path": "${{parent.jobs.sentiment_train.outputs.output}}"
+        },
+        "tfidf": {
+          "path": "${{parent.jobs.tfidf.outputs.train_out}}"
+        }
+      },
+      "type": "command"
+    },
+    "merge_val": {
+      "component": "azureml:merge_features:2026-03-02-16-56-02-1985001",
+      "inputs": {
+        "length": {
+          "path": "${{parent.jobs.length_val.outputs.output}}"
+        },
+        "sbert": {
+          "path": "${{parent.jobs.sbert_val.outputs.output}}"
+        },
+        "sentiment": {
+          "path": "${{parent.jobs.sentiment_val.outputs.output}}"
+        },
+        "tfidf": {
+          "path": "${{parent.jobs.tfidf.outputs.val_out}}"
+        }
+      },
+      "type": "command"
+    },
+    "normalize_test": {
+      "component": "azureml:normalize_text:2026-03-02-16-55-42-1695358",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.split.outputs.test}}"
+        }
+      },
+      "type": "command"
+    },
+    "normalize_train": {
+      "component": "azureml:normalize_text:2026-03-02-16-55-42-1695358",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.split.outputs.train}}"
+        }
+      },
+      "type": "command"
+    },
+    "normalize_val": {
+      "component": "azureml:normalize_text:2026-03-02-16-55-42-1695358",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.split.outputs.val}}"
+        }
+      },
+      "type": "command"
+    },
+    "sbert_test": {
+      "component": "azureml:sbert_embeddings:2026-03-02-16-55-58-7496489",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.normalize_test.outputs.out}}"
+        }
+      },
+      "type": "command"
+    },
+    "sbert_train": {
+      "component": "azureml:sbert_embeddings:2026-03-02-16-55-58-7496489",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.normalize_train.outputs.out}}"
+        }
+      },
+      "type": "command"
+    },
+    "sbert_val": {
+      "component": "azureml:sbert_embeddings:2026-03-02-16-55-58-7496489",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.normalize_val.outputs.out}}"
+        }
+      },
+      "type": "command"
+    },
+    "sentiment_test": {
+      "component": "azureml:sentiment_features:2026-03-02-16-55-50-5300469",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.normalize_test.outputs.out}}"
+        }
+      },
+      "type": "command"
+    },
+    "sentiment_train": {
+      "component": "azureml:sentiment_features:2026-03-02-16-55-50-5300469",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.normalize_train.outputs.out}}"
+        }
+      },
+      "type": "command"
+    },
+    "sentiment_val": {
+      "component": "azureml:sentiment_features:2026-03-02-16-55-50-5300469",
+      "inputs": {
+        "data": {
+          "path": "${{parent.jobs.normalize_val.outputs.out}}"
+        }
+      },
+      "type": "command"
+    },
+    "split": {
+      "component": "azureml:split_dataset:2",
+      "inputs": {
+        "data": {
+          "path": "${{parent.inputs.sampled_data}}"
+        }
+      },
+      "type": "command"
+    },
+    "tfidf": {
+      "component": "azureml:tfidf_features:2026-03-02-16-55-53-7811664",
+      "inputs": {
+        "test": {
+          "path": "${{parent.jobs.normalize_test.outputs.out}}"
+        },
+        "train": {
+          "path": "${{parent.jobs.normalize_train.outputs.out}}"
+        },
+        "val": {
+          "path": "${{parent.jobs.normalize_val.outputs.out}}"
+        }
+      },
+      "type": "command"
+    }
+  },
+  "name": "tender_sail_9my3fkg5sl",
+  "properties": {
+    "azureml.git.dirty": "True",
+    "mlflow.source.git.branch": "assignment_2",
+    "mlflow.source.git.commit": "f5e2ac0d2bcd75c41dc9ec5015851042e5377e89",
+    "mlflow.source.git.repoURL": "git@github.com:MohZak-AI/dsai3202-lab3.git"
+  },
+  "resourceGroup": "rg-60301919",
+  "services": {
+    "Studio": {
+      "endpoint": "https://ml.azure.com/runs/tender_sail_9my3fkg5sl?wsid=/subscriptions/0b475409-9d7c-4dff-a07b-084eff651874/resourcegroups/rg-60301919/workspaces/Amazon-Electronics-Lab-60301919&tid=b30f4b44-46c6-4070-9997-f87b38d4771c",
+      "type": "Studio"
+    },
+    "Tracking": {
+      "endpoint": "azureml://qatarcentral.api.azureml.ms/mlflow/v1.0/subscriptions/0b475409-9d7c-4dff-a07b-084eff651874/resourceGroups/rg-60301919/providers/Microsoft.MachineLearningServices/workspaces/Amazon-Electronics-Lab-60301919?",
+      "type": "Tracking"
+    }
+  },
+  "status": "NotStarted",
+  "type": "pipeline"
+}

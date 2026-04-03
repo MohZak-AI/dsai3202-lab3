@@ -1,0 +1,27 @@
+{
+  "component": "azureml:tfidf_features:2026-03-02-16-55-53-7811664",
+  "inputs": {
+    "max_features": "500",
+    "test": {
+      "path": "${{parent.jobs.normalize_test.outputs.out}}"
+    },
+    "train": {
+      "path": "${{parent.jobs.normalize.outputs.out}}"
+    },
+    "val": {
+      "path": "${{parent.jobs.normalize_val.outputs.out}}"
+    }
+  },
+  "outputs": {
+    "test_out": {
+      "type": "uri_folder"
+    },
+    "train_out": {
+      "type": "uri_folder"
+    },
+    "val_out": {
+      "type": "uri_folder"
+    }
+  },
+  "type": "command"
+}

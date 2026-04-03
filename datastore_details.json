@@ -1,0 +1,12 @@
+{
+  "account_name": "amazonelectron5961875857",
+  "container_name": "azureml-blobstore-16a95d26-1921-443e-9ef7-8a48df02be00",
+  "credentials": {},
+  "endpoint": "core.windows.net",
+  "id": "/subscriptions/0b475409-9d7c-4dff-a07b-084eff651874/resourceGroups/rg-60301919/providers/Microsoft.MachineLearningServices/workspaces/Amazon-Electronics-Lab-60301919/datastores/workspaceblobstore",
+  "name": "workspaceblobstore",
+  "protocol": "https",
+  "resourceGroup": "rg-60301919",
+  "tags": {},
+  "type": "azure_blob"
+}
