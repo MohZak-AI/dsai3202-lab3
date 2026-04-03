@@ -124,3 +124,33 @@ The feature set spec points to the merge output from the pipeline run. Having th
 - **NLTK (VADER)** - sentiment analysis
 - **Sentence-Transformers** - semantic embeddings
 - **pandas / pyarrow** - data manipulation and parquet I/O
+
+## Assignment 2 - Modeling and MLOps
+
+In this phase, we built a robust classification model to predict whether a review is positive (4-5 stars) or negative (1-3 stars) using the features engineered in Lab 4.
+
+### Model Improvements
+*   **Algorithm**: Switched from Logistic Regression to **RandomForestClassifier** (200 estimators, max depth 15) to better handle non-linear relationships in TF-IDF and SBERT features.
+*   **Balanced Learning**: Used `class_weight='balanced'` to account for the common imbalance in star ratings.
+*   **Scaling Pipeline**: Implemented a `scikit-learn` **Pipeline** that integrates `StandardScaler` with the model, ensuring features are properly normalized before training and inference.
+
+### Comprehensive Metric Logging
+The `evaluate` function now logs a full suite of metrics to **MLflow** for each split (train, val, test):
+*   **Accuracy** 
+*   **Precision, Recall, and F1-Score** (Binary)
+*   **ROC-AUC** (using `predict_proba`)
+*   **Training Runtime**
+
+### Infrastructure & CI/CD
+We automated the end-to-end training process:
+*   **Environment**: Configured `env/conda.yml` with all dependencies including `mlflow`, `joblib`, and `sentence-transformers`.
+*   **Azure ML Job**: Defined `jobs/train_job.yml` to run the model on the `lab4-60301919` compute cluster.
+*   **Azure DevOps Pipeline**: Created `azure - pipelines.yaml` to trigger automatic job submission on any push to the `assignment_2` branch.
+
+### How to Run
+1.  **Local/CLI**: Submit the job using the Azure CLI:
+    `az ml job create --file jobs/train_job.yml --resource-group rg-60301919 --workspace-name Amazon-Electronics-Lab-60301919`
+2.  **Automated**: Push any changes to the `assignment_2` branch to trigger the DevOps pipeline.
+
+### Results
+The model artifact (**`model.pkl`**) is saved to the Azure ML output directory and registered in MLflow for easy deployment.
