@@ -6,8 +6,10 @@ import mlflow
 import joblib
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support, roc_auc_score
 
 # --------------------------------------------------
 # Arguments
@@ -93,9 +95,20 @@ def build_feature_matrix(df, feature_cols):
 # --------------------------------------------------
 def evaluate(model, X, y, split):
     preds = model.predict(X)
+    # For AUC, we need probabilities for the positive class (1)
+    probs = model.predict_proba(X)[:, 1]
+    
     acc = accuracy_score(y, preds)
+    precision, recall, f1, _ = precision_recall_fscore_support(y, preds, average='binary')
+    auc = roc_auc_score(y, probs)
+    
     mlflow.log_metric(f"{split}_accuracy", acc)
-    print(f"{split} accuracy: {acc:.4f}")
+    mlflow.log_metric(f"{split}_precision", precision)
+    mlflow.log_metric(f"{split}_recall", recall)
+    mlflow.log_metric(f"{split}_f1", f1)
+    mlflow.log_metric(f"{split}_auc", auc)
+    
+    print(f"{split} accuracy: {acc:.4f}, f1: {f1:.4f}, auc: {auc:.4f}")
     return acc
 
 def main():
@@ -131,9 +144,21 @@ def main():
     
     print(f"Training on {X_train.shape[0]} samples...")
     
-    # Training
-    model = LogisticRegression(max_iter=1000)
-    model.fit(X_train, y_train)
+    # Training Pipeline: Scaling + Model
+    print("Building and training the model pipeline...")
+    pipeline = Pipeline([
+        ('scaler', StandardScaler()),
+        ('classifier', RandomForestClassifier(
+            n_estimators=200, 
+            max_depth=15, 
+            min_samples_leaf=2,
+            class_weight='balanced', 
+            random_state=42
+        ))
+    ])
+    
+    pipeline.fit(X_train, y_train)
+    model = pipeline  # Use pipeline for evaluation and saving
     
     print("Evaluating model performance...")
     evaluate(model, X_train, y_train, "train")
@@ -146,7 +171,7 @@ def main():
     joblib.dump(model, model_path)
     
     # Log model to MLflow
-    mlflow.sklearn.log_model(model, "logistic_regression_model")
+    mlflow.sklearn.log_model(model, "random_forest_pipeline")
     
     runtime = time.time() - start_time
     mlflow.log_metric("training_runtime_seconds", runtime)
