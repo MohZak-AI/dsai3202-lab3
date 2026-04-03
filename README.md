@@ -62,3 +62,22 @@ We verified the deployment using the **10% Deployment Dataset** (unseen during t
 > ```bash
 > az ml online-endpoint delete --name amazon-review-endpoint --yes
 > ```
+
+---
+
+## 🎁 Bonus: The "One Thing" We're Doing Wrong
+
+There is a significant architectural flaw in this MLOps implementation known as **Training-Serving Skew**:
+
+### The "Sus" Logic in `score.py`
+Currently, our [score.py](file:///Users/mohammedmoulai/Documents/Winter%202026/cloud-computing/Assignment%202/dsai3202-lab3/src/score.py) expects the client to send **pre-engineered features** (900+ columns of TF-IDF vectors, SBERT embeddings, etc.) as input.
+
+**Why this is wrong for Production:**
+A real user or front-end application only has the **raw review text**. They do not have the complex tools (like NLTK/VADER or Sentence-Transformers) to calculate embeddings on the fly before calling our API. 
+
+**The Correct Way:**
+In a professional production environment, the **Managed Online Endpoint** should either:
+1.  **Integrate the Feature Extraction**: The `score.py` should accept raw text, clean it, and run the TF-IDF/SBERT logic *inside* the container before calling `model.predict()`.
+2.  **Online Feature Store**: Retrieve pre-calculated features from a low-latency database based on an ID.
+
+By forcing the client to do the feature engineering, we've created a massive burden on the application and a high risk of performance drift.
