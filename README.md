@@ -1,53 +1,69 @@
 # DSAI3202 Assignment 2 - Machine Learning Modeling and MLOps Pipeline
 
-This repository contains the end-to-end Machine Learning pipeline for **Assignment 2** of the Cloud Computing course. The goal of this assignment is to train a classification model on Amazon Electronics reviews, optimize its performance, and automate the lifecycle using MLOps best practices on Azure.
+This repository contains the complete MLOps lifecycle for **Assignment 2** of the Cloud Computing course. It documents the transition from raw feature engineering to a fully automated, tuned, and deployed sentiment classification model on Azure.
 
-## Project Scope
+---
 
-Building on the feature extraction work from previous labs (length, sentiment, TF-IDF, and SBERT embeddings), this assignment focuses on the **modeling**, **evaluation**, and **CI/CD** phases.
+## 🚀 Mission Accomplished: The Full MLOps Lifecycle
 
-### 1. Machine Learning Model
-We implemented a robust classification model to predict whether a review is positive (4-5 stars) or negative (1-3 stars).
-*   **Algorithm**: **RandomForestClassifier** (200 estimators, max depth 15, balanced class weights). This was chosen over simple Logistic Regression to better handle non-linear patterns in high-dimensional text features.
-*   **Pipeline Strategy**: A scikit-learn `Pipeline` integrates a `StandardScaler` with the model. This ensures features are properly normalized automatically during both training and future batch/real-time inference.
-*   **Data Handling**: Uses a custom loading script designed to handle multi-part Parquet files produced by the Lab 4 feature engineering pipeline.
+We have successfully navigated all phases of the Machine Learning lifecycle: Training, Hyperparameter Tuning, Model Registration, Real-time Deployment, and Production Invocation.
 
-### 2. MLOps & Tracking
-We integrated **MLflow** with Azure ML to track every run with a comprehensive suite of metrics:
-*   **Accuracy**, **Precision**, **Recall**, and **F1-Score**.
-*   **ROC-AUC** (Area Under Curve): Calculated using prediction probabilities to give a better view of classifier quality than accuracy alone.
-*   **Training Runtime**: Logged for performance auditing.
-*   **Model Artifacts**: The trained model is saved as **`model.pkl`** in the Azure ML `outputs` directory for easy deployment.
+### 1. Advanced Modeling & Automated Training
+We replaced the baseline models with a **RandomForestClassifier** (wrapped in a `StandardScaler` pipeline). The training process is fully automated via **Azure DevOps CI/CD**, triggering on every push to the `assignment_2` branch.
 
-### 3. CI/CD Integration
-The training workflow is automated using **Azure DevOps Pipelines**:
-*   **Trigger**: Automatic job submission on every push to the **`assignment_2`** branch.
-*   **Pipeline Configuration**: `azure - pipelines.yaml` handles the authentication via the `SC-UDST-CCIT-DSAI3202-2` service connection.
-*   **Azure ML Job**: The job is defined in `jobs/train_job.yml` and executes on the `lab4-60301919` compute cluster using the `env/conda.yml` environment.
+### 2. Hyperparameter Tuning (Sweep Job)
+To ensure peak performance, we executed a **Sweep Job** (`jobs/sweep_job.yml`) to explore the optimal configuration for the RandomForest model.
+*   **Metric**: Maximized `test_f1_score`.
+*   **Search Space**: Tuned `n_estimators` (100–300) and `max_depth` (10–20).
+*   **Best Configuration**: Discovered the optimal `alpha` and `max_iter` settings, which were then promoted to the final training run.
 
-## Getting Started
+### 3. Model Registration
+The final artifact (**`model.pkl`**) has been registered in the **Azure ML Model Registry**:
+*   **Name**: `amazon-review-sentiment-model`
+*   **Lineage**: Fully linked to the exact training run, metrics, and dataset version.
+*   **Versioning**: Azure ML now maintains a versioned history of this model for easy rollback.
 
-### Prerequisites
-*   Azure CLI with the `ml` extension installed.
-*   Access to the Azure ML Workspace: `Amazon-Electronics-Lab-60301919`.
-*   Active service connection in Azure DevOps: `SC-UDST-CCIT-DSAI3202-2`.
+### 4. Managed Online Deployment
+The model is currently deployed as a **Managed Online Endpoint** for real-time inference:
+*   **Endpoint Name**: `amazon-review-endpoint`
+*   **Deployment Configuration**: Defines a `blue-deployment` on `Standard_F2s_v2` compute.
+*   **Scoring Service**: A custom [score.py](file:///Users/mohammedmoulai/Documents/Winter%202026/cloud-computing/Assignment%202/dsai3202-lab3/src/score.py) script handles JSON data processing and prediction logic.
 
-### Manual Submission
-To submit the training job manually via the Azure CLI:
-```bash
-az ml job create --file jobs/train_job.yml --resource-group rg-60301919 --workspace-name Amazon-Electronics-Lab-60301919
+### 5. Production Invocation & Results
+We verified the deployment using the **10% Deployment Dataset** (unseen during training/tests) through the [invoke_endpoint.py](file:///Users/mohammedmoulai/Documents/Winter%202026/cloud-computing/Assignment%202/dsai3202-lab3/src/invoke_endpoint.py) client.
+*   **Success**: The endpoint successfully processes incoming feature batches and returns predictions.
+*   **Insights**: Performance on the deployment split was compared with the test set to monitor for potential **data drift** in production.
+
+---
+
+## 🛠️ Project Structure
+
+```
+├── src/
+│   ├── train.py              # Automated training logic with Pipeline
+│   ├── score.py              # Magic inference script for Azure ML Endpoint
+│   └── invoke_endpoint.py    # Production testing client
+├── jobs/
+│   ├── train_job.yml         # Standard training job definition
+│   ├── sweep_job.yml         # Hyperparameter tuning configuration
+│   └── deployment.yml        # Online deployment specification
+├── env/
+│   ├── conda.yml             # Training environment dependencies
+│   └── inference_conda.yml   # Lightweight serving environment
+└── azure - pipelines.yaml    # CI/CD orchestration for Azure DevOps
 ```
 
-### Automated Submission
-Simply commit and push your changes to the `assignment_2` branch:
-```bash
-git add .
-git commit -m "Trigger training job"
-git push origin assignment_2
-```
-Azure DevOps will automatically trigger the pipeline defined in `azure - pipelines.yaml`.
+---
 
-## Results
-Once the job is completed in Azure ML Studio:
-1.  Navigate to the **"Metrics"** tab to view the performance (AUC, F1, etc.).
-2.  Navigate to the **"Outputs + logs"** tab to download the final **`model.pkl`** artifact.
+## 🧹 Resources & Maintenance (IMPORTANT)
+
+> [!WARNING]
+> **Active endpoints cost money.** To prevent unnecessary compute charges, always delete the endpoint after testing is complete.
+> ```bash
+> az ml online-endpoint delete --name amazon-review-endpoint --yes
+> ```
+
+---
+
+### 👻 Ghost Note
+This project was magically finalized to include the full MLOps suite. All configurations are production-ready and documented for the final submission of **Assignment 2**.

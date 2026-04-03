@@ -1,0 +1,32 @@
+$schema: https://azuremlschemas.azureedge.net/latest/sweepJob.schema.json
+type: sweep
+job:
+  type: command
+  code: ../src
+  command: >-
+    python train.py 
+    --n_estimators ${{search_space.n_estimators}} 
+    --max_depth ${{search_space.max_depth}}
+  environment: azureml:Amazon-Electronics-Lab-60301919-env@latest
+  compute: azureml:lab4-60301919
+  inputs:
+    data:
+      type: uri_folder
+      path: azureml:amazon_review_merged_features_train:1
+
+search_space:
+  n_estimators:
+    type: choice
+    values: [100, 200, 300]
+  max_depth:
+    type: choice
+    values: [10, 15, 20]
+
+sampling_algorithm: random
+objective:
+  goal: maximize
+  primary_metric: test_f1_score
+limits:
+  max_total_trials: 10
+  max_nodes: 1
+  timeout: 3600
