@@ -62,8 +62,3 @@ We verified the deployment using the **10% Deployment Dataset** (unseen during t
 > ```bash
 > az ml online-endpoint delete --name amazon-review-endpoint --yes
 > ```
-
----
-
-### 👻 Ghost Note
-This project was magically finalized to include the full MLOps suite. All configurations are production-ready and documented for the final submission of **Assignment 2**.
