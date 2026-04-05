@@ -5,14 +5,27 @@ job:
   code: ../src
   command: >-
     python train.py 
+    --train_data ${{inputs.train_data}} 
+    --val_data ${{inputs.val_data}} 
+    --test_data ${{inputs.test_data}} 
+    --output ${{outputs.output}}
     --n_estimators ${{search_space.n_estimators}} 
     --max_depth ${{search_space.max_depth}}
   environment: azureml:Amazon-Electronics-Lab-60301919-env@latest
   compute: azureml:lab4-60301919
   inputs:
-    data:
+    train_data:
       type: uri_folder
       path: azureml:amazon_review_merged_features_train:1
+    val_data:
+      type: uri_folder
+      path: azureml:amazon_review_merged_features_val:1
+    test_data:
+      type: uri_folder
+      path: azureml:amazon_review_merged_features_test:1
+  outputs:
+    output:
+      type: uri_folder
 
 search_space:
   n_estimators:
@@ -25,7 +38,7 @@ search_space:
 sampling_algorithm: random
 objective:
   goal: maximize
-  primary_metric: test_f1_score
+  primary_metric: val_f1
 limits:
   max_total_trials: 10
   max_nodes: 1

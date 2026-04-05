@@ -20,6 +20,8 @@ def parse_args():
     parser.add_argument("--val_data", type=str, required=True)
     parser.add_argument("--test_data", type=str, required=True)
     parser.add_argument("--output", type=str, required=True)
+    parser.add_argument("--n_estimators", type=int, default=200, help="Number of trees in the forest")
+    parser.add_argument("--max_depth", type=int, default=15, help="Maximum depth of each tree")
     return parser.parse_args()
 
 # --------------------------------------------------
@@ -121,6 +123,10 @@ def main():
     # Initialize MLflow
     mlflow.start_run()
     
+    # Log hyperparameters for tracking
+    mlflow.log_param("n_estimators", args.n_estimators)
+    mlflow.log_param("max_depth", args.max_depth)
+    
     print("Loading datasets produced in Lab 4...")
     train_df = load_data(args.train_data)
     val_df = load_data(args.val_data)
@@ -148,12 +154,12 @@ def main():
     print(f"Training on {X_train.shape[0]} samples with {X_train.shape[1]} features...")
     
     # Training Pipeline: Scaling + Model
-    print("Building and training the model pipeline (Optimized for Speed)...")
+    print(f"Building and training the model pipeline (Optimized for Speed: n_estimators={args.n_estimators}, max_depth={args.max_depth})...")
     pipeline = Pipeline([
         ('scaler', StandardScaler()),
         ('classifier', RandomForestClassifier(
-            n_estimators=200, 
-            max_depth=15, 
+            n_estimators=args.n_estimators, 
+            max_depth=args.max_depth, 
             min_samples_leaf=2,
             max_samples=0.7,        # Sub-sampling speedup (~30% faster)
             n_jobs=-1,              # Parallel training (Uses all available cores)
