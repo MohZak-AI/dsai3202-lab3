@@ -83,7 +83,8 @@ def build_feature_matrix(df, feature_cols):
         for col in missing_cols:
             df[col] = 0.0
 
-    X = df[feature_cols].values
+    # Cast to float32 for faster calculations and lower memory footprint
+    X = df[feature_cols].values.astype(np.float32)
     
     if X.shape[1] == 0:
         raise RuntimeError("Feature matrix is empty. Did your pipeline even run?")
@@ -94,6 +95,8 @@ def build_feature_matrix(df, feature_cols):
 # Evaluation
 # --------------------------------------------------
 def evaluate(model, X, y, split):
+    # Ensure evaluation also uses float32
+    X = X.astype(np.float32)
     preds = model.predict(X)
     # For AUC, we need probabilities for the positive class (1)
     probs = model.predict_proba(X)[:, 1]
@@ -142,16 +145,18 @@ def main():
     X_test = build_feature_matrix(test_df, feature_cols)
     y_test = test_df["label"]
     
-    print(f"Training on {X_train.shape[0]} samples...")
+    print(f"Training on {X_train.shape[0]} samples with {X_train.shape[1]} features...")
     
     # Training Pipeline: Scaling + Model
-    print("Building and training the model pipeline...")
+    print("Building and training the model pipeline (Optimized for Speed)...")
     pipeline = Pipeline([
         ('scaler', StandardScaler()),
         ('classifier', RandomForestClassifier(
             n_estimators=200, 
             max_depth=15, 
             min_samples_leaf=2,
+            max_samples=0.7,        # Sub-sampling speedup (~30% faster)
+            n_jobs=-1,              # Parallel training (Uses all available cores)
             class_weight='balanced', 
             random_state=42
         ))
