@@ -1,3 +1,13 @@
+parameters:
+  - name: compute_name
+    displayName: "Azure ML Compute Target"
+    type: string
+    default: "lab4-60301919"
+  - name: experiment_name
+    displayName: "Azure ML Experiment Name"
+    type: string
+    default: "dsai3202-lab3"
+
 trigger:
   branches:
     include:
@@ -14,7 +24,7 @@ variables:
 steps:
   - checkout: self
   - task: AzureCLI@2
-    displayName: "Submit Azure ML Training Job"
+    displayName: "Submit & Track Azure ML Job"
     inputs:
       azureSubscription: $(AZURE_SUBSCRIPTION)
       scriptType: bash
@@ -29,9 +39,32 @@ steps:
           group=$(RESOURCE_GROUP) \
           workspace=$(WORKSPACE_NAME)
         
-        echo "Submitting Azure ML job"
-        JOB_NAME=$(az ml job create --file jobs/train_job.yml --query name -o tsv)
-        echo "Job name: $JOB_NAME"
+        echo "Submitting Azure ML job..."
+        # Submit the job and capture the name
+        JOB_NAME=$(az ml job create \
+          --file jobs/train_job.yml \
+          --set compute=azureml:${{ parameters.compute_name }} \
+          --set experiment_name=${{ parameters.experiment_name }} \
+          --query name -o tsv)
         
-        echo "Streaming job logs"
+        echo "##vso[task.setvariable variable=JOB_NAME]$JOB_NAME"
+        echo "Job submitted successfully: $JOB_NAME"
+        
+        # Get the direct Studio URL for the user to click
+        STUDIO_URL=$(az ml job show --name $JOB_NAME --query services.Studio.endpoint -o tsv)
+        echo "--------------------------------------------------------"
+        echo "VIEW YOUR JOB IN AZURE ML STUDIO HERE:"
+        echo "$STUDIO_URL"
+        echo "--------------------------------------------------------"
+        
+        echo "Streaming job logs and waiting for completion..."
         az ml job stream --name $JOB_NAME
+        
+        # Final status check to ensure DevOps reflects failure if the job fails
+        STATUS=$(az ml job show --name $JOB_NAME --query status -o tsv)
+        echo "Final Job Status: $STATUS"
+        
+        if [ "$STATUS" != "Completed" ]; then
+          echo "Error: Azure ML Job failed with status $STATUS"
+          exit 1
+        fi
